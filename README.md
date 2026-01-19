@@ -32,3 +32,27 @@ VITE_API_BASE_URL=http://localhost:5000/api/v1
 
 ### 4. jalankan Server
 npm run dev
+
+## Strultur folder
+src/
+├── assets/              # Gambar, font, dan file statis
+├── components/          # Komponen UI yang dapat digunakan kembali
+│   ├── dashboard/       # Komponen spesifik dashboard (Layout, Sidebar, Navbar)
+│   └── ui/              # Komponen kecil (Button, Input, Card)
+├── hooks/               # Custom hooks global (jika ada)
+├── lib/                 # Utilitas dan konfigurasi library (axios.js, utils.js)
+├── pages/               # Halaman utama aplikasi (berdasarkan rute)
+│   ├── auth/            # Halaman Login, Register, Verify Email
+│   └── dashboard/       # Halaman Dashboard
+│       ├── history/     # Fitur Riwayat (index.jsx + logic hook)
+│       ├── home/        # Fitur Home Dashboard
+│       ├── quiz/        # Fitur Pengerjaan Kuis Aktif
+│       └── result/      # Fitur Halaman Hasil Kuis
+├── services/            # Layer komunikasi API (Axios calls)
+│   ├── auth/            # Endpoint auth (login/register)
+│   └── quiz/            # Endpoint quiz data
+├── store/               # Global State Management (Zustand)
+│   ├── useAuthStore.js  # State User & Token
+│   └── useQuizStore.js  # State Sesi Kuis
+├── App.jsx              # Konfigurasi Routing Utama
+└── main.jsx             # Entry point React
