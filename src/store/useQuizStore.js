@@ -36,14 +36,19 @@ export const useQuizStore = create(
           const response = await quizServices.startQuiz(subtestId);
           const data = response.data;
 
+          const safeSlug = data.subtest_name.toLowerCase().replace(/\s+/g, "-");
+
           set({
             sessionId: data.session_id,
             quizTitle: data.subtest_name,
             questions: data.questions || [],
+            quizSlug: safeSlug,
             endTime: data.expires_at,
             currentQuestionIndex: 0,
             userAnswers: {},
           });
+
+          return { ...data, generatedSlug: safeSlug };
         } catch (err) {
           if (err.response?.status === 409) {
             toast.error("Anda masih memiliki sesi kuis yang aktif!");
@@ -59,11 +64,13 @@ export const useQuizStore = create(
         }
       },
 
-      resumeSession: async (navigate) => {
+      resumeSession: async () => {
         set({ isLoading: true, error: null });
         try {
           const response = await quizServices.getActiveSession();
           const data = response.data;
+
+          const safeSlug = data.subtest_name.toLowerCase().replace(/\s+/g, "-");
 
           const { userAnswers: localAnswers, sessionId: localSessionId } =
             get();
@@ -81,16 +88,17 @@ export const useQuizStore = create(
             sessionId: data.session_id,
             quizTitle: data.subtest_name,
             questions: data.questions || [],
+            quizSlug: safeSlug,
             endTime: data.expires_at,
             userAnswers: finalAnswers,
             currentQuestionIndex: data.last_question_index || 0,
           });
 
-          navigate("/quiz/active");
+          return { ...data, generatedSlug: safeSlug };
         } catch (err) {
-          const msg =
-            err.response?.data?.error?.message || err.response?.data.error;
-          toast.error(msg);
+          const msg = err.response?.data?.error?.message || err.response?.data.error;
+          console.error(msg);
+
           set({ sessionId: null });
         } finally {
           set({ isLoading: false });
@@ -106,29 +114,29 @@ export const useQuizStore = create(
         }));
       },
 
-      finishQuiz: async (navigate) => {
-        set({ isLoading: true});
+      finishQuiz: async () => {
+        set({ isLoading: true });
         set({ endTime: null });
 
         try {
-          const { userAnswers } = get();
+          const { userAnswers, questions } = get();
+          const formattedAnswers = {};
 
-          const payload = { answers: userAnswers };
+          questions.forEach((question) => {
+            const key = question.question_number;
+
+            if (userAnswers[key]) {
+              formattedAnswers[key] = userAnswers[key];
+            } else {
+              formattedAnswers[key] = "";
+            }
+          });
+
+          const payload = { answers: formattedAnswers };
 
           await quizServices.submitQuiz(payload);
-
-          toast.success("Kuis berhasil disubmit!");
-
-          navigate("/history");
         } catch (err) {
-          console.error("Finish Error:", err);
-
-          if (err.response?.status === 400) {
-             toast.error("Waktu habis. Sesi ditutup otomatis.");
-          } else {
-             toast.error("Terjadi kesalahan saat submit, kembali ke menu utama.");
-          }
-         //  navigate("/");
+          console.error(err);
         } finally {
           set({
             isLoading: false,

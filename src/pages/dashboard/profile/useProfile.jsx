@@ -39,14 +39,15 @@ export default function useProfile() {
       try {
         setIsLoading(true);
         const response = await profileServices.getProfile();
-         
         updateUser(response.data);
+        
+         
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
     };
     fetchProfile();
-  }, []);
+  }, [updateUser]);
 
 
   const handleSubmit = async (e) => {
@@ -108,6 +109,7 @@ export default function useProfile() {
      dataProfile: user,
      isLoading,
      formData,
+     user,
      toggleModal,
      setModalOpen,
      handleSubmit,

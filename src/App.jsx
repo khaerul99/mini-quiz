@@ -1,5 +1,4 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./pages/home";
 import LoginPage from "./pages/auth/login";
 import RegisterPage from "./pages/auth/register";
 import HomeDashboard from "./pages/dashboard/home";
@@ -13,10 +12,7 @@ import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 
 const router = createBrowserRouter([
-  {
-    path: "/home",
-    element: <Home />,
-  },
+
   {
     path: "/auth/login",
     element: <LoginPage />,
@@ -30,11 +26,11 @@ const router = createBrowserRouter([
     element: <HomeDashboard />,
   },
   {
-    path: "/quiz/active",
+    path: "/quiz/active/:slug",
     element: <QuizPage />,
   },
   {
-    path: "/result/:subtestId",
+    path: "/quiz/result/:subtestId",
     element: <ResultPage />,
   },
   {

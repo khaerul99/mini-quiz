@@ -1,118 +1,124 @@
 import React from 'react';
-import { CheckCircle, XCircle, Clock, Home, History } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Home, History, Calendar, AlertCircle, Loader2 } from 'lucide-react';
 import useResultPage from './useResultPage';
 import Layout from '../../../components/dashboard/layout';
 
 
 export default function ResultPage() {
-   const { result, navigate } = useResultPage();
+   const { resultData, navigate, isLoading  } = useResultPage();
+
+   if (isLoading) {
+    return (
+        <Layout>
+            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+                <Loader2 className="animate-spin text-blue-600 mb-4" size={40} />
+                <p className="text-gray-500 font-medium">Sedang menghitung nilai...</p>
+            </div>
+        </Layout>
+    );
+  }
+
+  if (!resultData) {
+    return (
+        <Layout>
+            <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 text-center">
+                <AlertCircle className="text-red-500 mb-4" size={50} />
+                <h2 className="text-xl font-bold text-gray-800">Data Tidak Ditemukan</h2>
+                <p className="text-gray-500 mb-6">Hasil kuis tidak tersedia atau ID sesi salah.</p>
+                <button onClick={() => navigate('/history')} className="px-6 py-2 bg-blue-600 text-white rounded-lg">
+                    Kembali ke History
+                </button>
+            </div>
+        </Layout>
+    );
+  }
+
+  // const themeColor = resultData.passed ? 'green' : 'red';
+  const scoreColor = resultData.passed ? 'text-emerald-600' : 'text-rose-600';
+  const ringColor = resultData.passed ? 'border-emerald-100' : 'border-rose-100';
+  const bgColor = resultData.passed ? 'bg-emerald-50' : 'bg-rose-50';
  
 
   return (
    <Layout>
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="bg-gray-50/50 py-10 px-4 min-h-125 flex items-center justify-center">
+      <div className="w-full max-w-2xl">
         
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden text-center p-8 md:p-12 relative">
-         
-          <div className={`absolute top-0 left-0 w-full h-2 ${result.passed ? 'bg-green-500' : 'bg-red-500'}`}></div>
-
-          <h1 className="text-gray-500 font-medium uppercase tracking-widest text-sm mb-2">Hasil Kuis Anda</h1>
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">{result.subtestName}</h2>
-
-        
-          <div className="flex justify-center mb-8">
-            <div className={`w-40 h-40 rounded-full flex flex-col items-center justify-center border-8 
-              ${result.passed ? 'border-green-100 bg-green-50 text-green-600' : 'border-red-100 bg-red-50 text-red-600'}`}>
-              <span className="text-5xl font-extrabold">{result.score}</span>
-              <span className="text-sm font-medium text-gray-500 mt-1">/ 100</span>
-            </div>
-          </div>
-
-          <p className={`text-lg font-medium mb-8 ${result.passed ? 'text-green-600' : 'text-red-500'}`}>
-            {result.passed ? "Selamat! Kompetensi Sangat Baik." : "Jangan menyerah, coba lagi!"}
-          </p>
-
-          <div className="grid grid-cols-3 gap-4 border-t pt-8">
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-2 text-green-600 mb-1">
-                <CheckCircle size={20} />
-                <span className="font-bold text-xl">{result.correct}</span>
-              </div>
-              <span className="text-xs text-gray-400">Benar</span>
-            </div>
-            <div className="flex flex-col items-center border-l border-r border-gray-100">
-              <div className="flex items-center gap-2 text-red-500 mb-1">
-                <XCircle size={20} />
-                <span className="font-bold text-xl">{result.wrong}</span>
-              </div>
-              <span className="text-xs text-gray-400">Salah</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-2 text-blue-600 mb-1">
-                <Clock size={20} />
-                <span className="font-bold text-sm">12m</span>
-              </div>
-              <span className="text-xs text-gray-400">Waktu</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <button 
-            onClick={() => navigate('/')}
-            className="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition"
-          >
-            <Home size={18} /> Ke Dashboard
-          </button>
-          <button 
-            onClick={() => navigate('/history')} 
-            className="flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium shadow-lg shadow-blue-200 transition"
-          >
-            <History size={18} /> History
-          </button>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-6 border-b bg-gray-50">
-            <h3 className="font-bold text-gray-800">Review Jawaban</h3>
-          </div>
+        {/* Main Card */}
+        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden relative">
           
-          <div className="divide-y">
-            {result.review.map((item, index) => (
-              <div key={index} className="p-6 hover:bg-gray-50 transition">
-                <div className="flex gap-4">
-                  <div className={` w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mt-1
-                    ${item.isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                    {item.number}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <p className="text-gray-800 font-medium mb-3">{item.question}</p>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div className={`flex items-center gap-2 ${item.isCorrect ? 'text-green-700' : 'text-red-600'}`}>
-                        <span className="w-24 text-gray-400 text-xs uppercase">Jawabanmu:</span>
-                        {item.isCorrect ? <CheckCircle size={16}/> : <XCircle size={16}/>}
-                        <span className="font-medium">{item.yourAnswer}</span>
-                      </div>
-
-                      {/* Jawaban Benar (Hanya muncul jika salah) */}
-                      {!item.isCorrect && (
-                        <div className="flex items-center gap-2 text-green-700">
-                          <span className="w-24 text-gray-400 text-xs uppercase">Jawaban Benar:</span>
-                          <CheckCircle size={16}/>
-                          <span className="font-medium">{item.correctAnswer}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Header Section: Date & Subject */}
+          <div className="p-8 pb-0 text-center relative z-10">
+            <div className="flex items-center justify-center gap-2 text-gray-400 text-xs font-medium uppercase tracking-wider mb-3">
+              <Calendar size={14} />
+              <span>{resultData.date}</span>
+              <span>•</span>
+              <span>{resultData.time}</span>
+            </div>
+            
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+              {resultData.subtestName}
+            </h1>
+            <p className="text-gray-500 text-sm">Hasil Evaluasi Kemampuan</p>
           </div>
-        </div>
 
+          {/* Score Section: Big Circle */}
+          <div className="py-10 flex flex-col items-center justify-center relative">
+            {/* Background Glow Effect */}
+            <div className={`absolute w-32 h-32 rounded-full blur-3xl opacity-20 ${bgColor}`}></div>
+
+            <div className={`relative w-48 h-48 rounded-full flex flex-col items-center justify-center border-10 ${ringColor} ${bgColor} transition-transform hover:scale-105 duration-500`}>
+              <span className={`text-6xl font-extrabold tracking-tighter ${scoreColor}`}>
+                {resultData.score}
+              </span>
+              <span className="text-gray-400 text-sm font-medium mt-1">
+                dari 100
+              </span>
+            </div>
+
+            {/* Status Message */}
+            <div className={`mt-6 px-6 py-2 rounded-full text-sm font-semibold border ${resultData.passed 
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
+              : 'bg-rose-50 text-rose-700 border-rose-100'}`}>
+              {resultData.passed ? "Kompetensi Sangat Baik" : "Jangan menyerah, coba lagi!"}
+            </div>
+          </div>
+
+          {/* Stats Grid: Modern Bento Box Style */}
+          <div className="p-6 bg-gray-50/50 border-t border-gray-100">
+            <div className="grid grid-cols-3 gap-4">
+              
+              {/* Benar */}
+              <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-2">
+                  <CheckCircle size={20} />
+                </div>
+                <span className="text-2xl font-bold text-gray-800">{resultData.correct}</span>
+                <span className="text-xs text-gray-400 font-medium uppercase mt-1">Benar</span>
+              </div>
+
+              {/* Salah */}
+              <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 mb-2">
+                  <XCircle size={20} />
+                </div>
+                <span className="text-2xl font-bold text-gray-800">{resultData.wrong}</span>
+                <span className="text-xs text-gray-400 font-medium uppercase mt-1">Salah</span>
+              </div>
+
+              {/* Waktu */}
+              <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-2">
+                  <Clock size={20} />
+                </div>
+                <span className="text-lg font-bold text-gray-800 mt-1">{resultData.duration}</span>
+                <span className="text-xs text-gray-400 font-medium uppercase mt-1">Waktu</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
     </Layout>

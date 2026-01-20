@@ -7,12 +7,12 @@ export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
-  const [status, setStatus] = useState('loading'); // loading | success | error
+  const [status, setStatus] = useState('loading'); 
   const [message, setMessage] = useState('Memverifikasi keaslian token...');
 
   useEffect(() => {
     const verifyToken = async () => {
-      // 1. Ambil token dari URL (contoh: localhost:5173/verify-email?token=ABCDEFG)
+      
       const tokenFromUrl = searchParams.get('token');
 
       if (!tokenFromUrl) {
@@ -27,7 +27,6 @@ export default function VerifyEmail() {
         setStatus('success');
         setMessage('Email berhasil diverifikasi! Akunmu sudah aktif.');
         
-        // Redirect otomatis ke login setelah 3 detik
         setTimeout(() => {
           navigate('/login');
         }, 3000);
@@ -35,12 +34,10 @@ export default function VerifyEmail() {
       } catch (error) {
         console.error(error);
         setStatus('error');
-        // Ambil pesan error dari backend jika ada
         setMessage(error.response?.data?.message || 'Token tidak valid atau sudah kadaluarsa.');
       }
     };
 
-    // Jalankan fungsi
     verifyToken();
   }, [searchParams, navigate]);
 
@@ -48,7 +45,7 @@ export default function VerifyEmail() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full text-center space-y-4">
         
-        {/* STATE: LOADING */}
+    
         {status === 'loading' && (
           <div className="flex flex-col items-center animate-pulse">
             <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-4" />
@@ -57,7 +54,7 @@ export default function VerifyEmail() {
           </div>
         )}
 
-        {/* STATE: SUKSES */}
+
         {status === 'success' && (
           <div className="flex flex-col items-center animate-in zoom-in duration-300">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -74,7 +71,7 @@ export default function VerifyEmail() {
           </div>
         )}
 
-        {/* STATE: ERROR */}
+
         {status === 'error' && (
           <div className="flex flex-col items-center animate-in shake duration-300">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">

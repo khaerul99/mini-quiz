@@ -1,21 +1,37 @@
 import React from "react";
 import Layout from "../../../components/dashboard/layout";
-// import useQuizPage from "./useQuizPage";
 import { Clock, ChevronRight, ChevronLeft, CheckCircle } from "lucide-react";
 import { Flag } from "lucide-react";
 import { useQuizAvtive } from "./useQuizPage";
 import QuizTimer from "./quizTimer";
 
-
 export default function QuizPage() {
-  const {setAnswer, userAnswers, questions, isLoading, prevQuestion, nextQuestion, jumpToQuestion, currentIndex, currentQuestion, totalQuestions, handleFinish} = useQuizAvtive();
-  
+  const {
+    setAnswer,
+    userAnswers,
+    questions,
+    isLoading,
+    modalConfirm,
+    setModalConfirm,
+    prevQuestion,
+    nextQuestion,
+    jumpToQuestion,
+    openModalConfirm,
+    currentIndex,
+    currentQuestion,
+    totalQuestions,
+    handleFinish,
+  } = useQuizAvtive();
 
   if (isLoading || !currentQuestion) {
-    return <div className="h-screen flex items-center justify-center">Memuat Soal...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Memuat Soal...
+      </div>
+    );
   }
 
-  const questionNumber = currentQuestion.question_number; 
+  const questionNumber = currentQuestion.question_number;
   const progressPercent = ((currentIndex + 1) / totalQuestions) * 100;
 
   const allAnswered = Object.keys(userAnswers).length === questions.length;
@@ -29,7 +45,7 @@ export default function QuizPage() {
             Soal {currentIndex + 1} dari {totalQuestions}
           </span>
           <div className="w-full h-2.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
-            <div 
+            <div
               className="h-full bg-blue-600 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progressPercent}%` }}
             ></div>
@@ -38,37 +54,35 @@ export default function QuizPage() {
 
         <div className="flex items-center gap-2 text-orange-600 bg-orange-50 px-3 py-1 rounded-full font-mono font-bold">
           <Clock size={18} />
-          <QuizTimer/>
+          <QuizTimer />
         </div>
       </header>
 
       <div className=" w-full p-4 md:p-6 flex flex-col md:flex-row gap-6 md:gap-8">
-       
         <main className="flex-1 bg-white p-6  rounded-xl border border-gray-200 shadow-sm">
-    
-            <div className="flex justify-between items-start mb-6">
-              <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-                Soal No. {questionNumber}
-              </span>
-              <button
-                className="text-gray-400 hover:text-yellow-500 transition"
-                title="Tandai Ragu-ragu"
-              >
-                <Flag size={20} />
-              </button>
-            </div>
+          <div className="flex justify-between items-start mb-6">
+            <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+              Soal No. {questionNumber}
+            </span>
+            <button
+              className="text-gray-400 hover:text-yellow-500 transition"
+              title="Tandai Ragu-ragu"
+            >
+              <Flag size={20} />
+            </button>
+          </div>
 
-            <h2 className="text-sm lg:text-lg font-medium text-gray-800 mb-8 leading-relaxed">
-              {currentQuestion.question_text}
-            </h2>
+          <h2 className="text-sm lg:text-lg font-medium text-gray-800 mb-8 leading-relaxed">
+            {currentQuestion.question_text}
+          </h2>
 
-            <div className="space-y-3">
-              {currentQuestion.options.map((opt, index) => {
-                const answerLabel = String.fromCharCode(65 + index); 
-   
-                const isSelected = userAnswers[questionNumber] === answerLabel;
-                
-                  return(
+          <div className="space-y-3">
+            {currentQuestion.options.map((opt, index) => {
+              const answerLabel = String.fromCharCode(65 + index);
+
+              const isSelected = userAnswers[questionNumber] === answerLabel;
+
+              return (
                 <button
                   key={index}
                   onClick={() => setAnswer(questionNumber, answerLabel)}
@@ -85,16 +99,19 @@ export default function QuizPage() {
                         : "bg-gray-100 text-gray-500 group-hover:bg-white group-hover:text-blue-500"
                     }`}
                   >
-                   {answerLabel}
+                    {answerLabel}
                   </span>
                   <span className="font-medium">{opt}</span>
 
-                    {isSelected && (
-                        <CheckCircle className="absolute right-4 text-blue-600 animate-in zoom-in" size={20} />
-                    )}
+                  {isSelected && (
+                    <CheckCircle
+                      className="absolute right-4 text-blue-600 animate-in zoom-in"
+                      size={20}
+                    />
+                  )}
                 </button>
-                  )
-                })}
+              );
+            })}
           </div>
 
           <div className="mt-10 pt-6 border-t flex justify-between items-center">
@@ -120,27 +137,28 @@ export default function QuizPage() {
 
             <div className="grid grid-cols-5 gap-2">
               {questions.map((q, i) => {
-
                 const qNum = q.question_number;
-                const isAnswered = !!userAnswers[qNum]; 
+                const isAnswered = !!userAnswers[qNum];
                 const isCurrent = i === currentIndex;
 
                 return (
-               <button
+                  <button
                     key={i}
-                    onClick={() => jumpToQuestion(i)} 
+                    onClick={() => jumpToQuestion(i)}
                     className={`h-10 w-full rounded-lg text-sm font-bold border transition-all flex items-center justify-center
-                      ${isCurrent 
-                        ? "border-blue-600 bg-blue-200 text-blue-600 ring-2 ring-blue-200" 
-                        : isAnswered 
-                            ? "bg-green-200 text-green-600 border-green-600" 
+                      ${
+                        isCurrent
+                          ? "border-blue-600 bg-blue-200 text-blue-600 ring-2 ring-blue-200"
+                          : isAnswered
+                            ? "bg-green-200 text-green-600 border-green-600"
                             : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
                       }
                     `}
                   >
                     {i + 1}
                   </button>
-              )})}
+                );
+              })}
             </div>
 
             <div className="mt-6 pt-4 border-t space-y-2">
@@ -158,11 +176,54 @@ export default function QuizPage() {
               </div>
             </div>
 
-            <button onClick={handleFinish} disabled={!allAnswered} className="w-full mt-6 bg-green-200 text-green-600 py-2.5 rounded-lg hover:bg-green-500 hover:text-white font-semibold shadow-lg shadow-green-100 transition">
+            <button
+              onClick={openModalConfirm}
+              disabled={!allAnswered}
+              className={`w-full mt-6 ${!allAnswered ? "bg-gray-200 text-black" : "bg-green-200 text-green-600 hover:bg-green-500 shadow-green-100 hover:text-white"}   py-2.5 rounded-lg font-semibold shadow-lg  transition`}
+            >
               Selesai & Submit
             </button>
           </div>
         </aside>
+      </div>
+
+      {/* ini Modal Confirm */}
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center  transition-colors duration-300 
+            ${
+              modalConfirm
+                ? "visible bg-black/20 backdrop-blur-sm"
+                : "invisible bg-black/0 pointer-events-none"
+            }`}
+      >
+        <div
+          className={`bg-gray-100 p-6 rounded-2xl shadow-lg w-full max-w-md 
+      transition-all duration-300 ease-in-out
+      ${
+        modalConfirm
+          ? "translate-y-0 opacity-100 scale-100"
+          : "-translate-y-10 opacity-0 scale-95"
+      }`}
+        >
+          <h2 className="text-xl font-bold mb-4">Confirm</h2>
+          <p>Apakah anda yakin ingin selesai?</p>
+          <div className=" flex justify-between mt-4">
+            <button
+              type="button"
+              onClick={handleFinish}
+              className=" w-20 cursor-pointer bg-blue-200 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-400 hover:text-white transition"
+            >
+              ya
+            </button>
+            <button
+              type="button"
+              onClick={() => setModalConfirm(false)}
+              className="w-20 cursor-pointer bg-red-200 text-red-700 px-4 py-2 rounded-md hover:bg-red-400 hover:text-white transition"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     //    </Layout>

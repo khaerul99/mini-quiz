@@ -29,7 +29,8 @@ export default function QuizTimer() {
             
             toast.error("Waktu Habis! Sesi Berakhir.", { duration: 3000 });
             
-            // finishQuiz(navigate); 
+            finishQuiz();
+            navigate("/history") 
         }
 
       } else {
@@ -38,7 +39,7 @@ export default function QuizTimer() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [endTime]); 
+  }, [endTime, finishQuiz, navigate]); 
 
   // Format MM:SS
   const formatTime = (ms) => {

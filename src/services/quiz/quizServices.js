@@ -5,6 +5,15 @@ export const quizServices = {
       const response = await api.get("/subtests");
       return response.data
    },
+   getHistory: async () => {
+      const response = await api.get("/quiz/history");
+      return response.data
+   },
+   getResult: async (subtestId) => {
+      const response = await api.get(`/quiz/result/${subtestId}`);
+      return response.data
+   },
+
    startQuiz: async (subtestId) => {
       const response = await api.get(`/quiz/start/${subtestId}`);
       return response.data

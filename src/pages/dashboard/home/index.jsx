@@ -1,108 +1,24 @@
-import { useEffect, useState } from "react";
 import Layout from "../../../components/dashboard/layout";
 
-import { MessageCircle, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useAuthStore } from "../../../store/useAuthStore";
-import { useQuizList } from "../quiz/useQuizPage";
-import { useNavigate } from "react-router-dom";
-import {
-  PlayCircle,
-  Calculator,
-  BookOpen,
-  PenTool,
-  BrainCircuit,
-} from "lucide-react";
-import toast from "react-hot-toast";
-import { useQuizStore } from "../../../store/useQuizStore";
-import { quizServices } from "../../../services/quiz/quizServices";
+import { PlayCircle } from "lucide-react";
+import useDashboardPage from "./useDashboardPage";
 
 export default function HomeDashboard() {
-  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const { subtests, isLoading, error } = useQuizList();
-  const startSession = useQuizStore((state) => state.startSession);
-  const resumeSession = useQuizStore((state) => state.resumeSession);
-  const [hasActiveSession, setHasActiveSession] = useState(false);
+  const {
+    handleStart,
+    handleResume, 
+    getCategoryStyle,
+    hasActiveSession,
+    subtests,
+    isSubtestLoading,
+    isErrorSubtest,
+    showSkeleton,
+    showData,
+  } = useDashboardPage();
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-       const response =  await quizServices.getActiveSession();
-       const data = response.data
-
-      if (data && data.session_id) {
-             setHasActiveSession(true); 
-        }
-      } catch  {
-        setHasActiveSession(false);
-      }
-    };
-    checkSession();
-  }, []);
-
-
-  const handleStart = async (id) => {
-    const toastId = toast.loading("menyimpan soal...");
-    try {
-      await startSession(id);
-
-      toast.dismiss(toastId);
-      toast.success("Kuis dimulai!");
-
-      navigate("/quiz/active");
-    } catch (err) {
-      toast.dismiss(toastId);
-      console.error(err);
-    }
-  };
-
-  const handleResume = async () => {
-    const toastId = toast.loading("melanjutkan Kuis...");
-    try {
-      await resumeSession(navigate);
-      toast.dismiss(toastId);
-      toast.success("Selamat mengerjakan kembali!");
-    } catch (err) {
-      toast(err);
-      toast.dismiss(toastId);
-    }
-  };
-
-  const getCategoryStyle = (name) => {
-    const lowerName = name.toLowerCase();
-
-    if (lowerName.includes("matematika")) {
-      return {
-        icon: <Calculator size={24} />,
-        color: "bg-blue-100 text-blue-600",
-        border: "border-blue-200",
-      };
-    }
-    if (lowerName.includes("inggris") || lowerName.includes("bacaan")) {
-      return {
-        icon: <BookOpen size={24} />,
-        color: "bg-yellow-100 text-yellow-600",
-        border: "border-yellow-200",
-      };
-    }
-    if (lowerName.includes("menulis") || lowerName.includes("pbm")) {
-      return {
-        icon: <PenTool size={24} />,
-        color: "bg-purple-100 text-purple-600",
-        border: "border-purple-200",
-      };
-    }
-    // Default Style
-    return {
-      icon: <BrainCircuit size={24} />,
-      color: "bg-gray-100 text-gray-600",
-      border: "border-gray-200",
-    };
-  };
-
-  const showSkeleton = isLoading && subtests.length === 0;
-  
-  const showData = subtests.length > 0;
 
   return (
     <Layout>
@@ -121,15 +37,9 @@ export default function HomeDashboard() {
             <div>
               <h3 className="font-semibold text-blue-800">Verifykasi Email</h3>
               <p className="text-sm text-blue-700">
-                Anda memiliki kuis Matematika yang belum disubmit.
+                Anda belum Verifikasi akun anda coba cek email
               </p>
             </div>
-            <button
-              onClick={() => navigate("/profile")}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
-            >
-              <MessageCircle size={16} /> Verifykasi
-            </button>
           </div>
         )}
 
@@ -163,19 +73,19 @@ export default function HomeDashboard() {
           </div>
         )}
 
-        {error && (
+        {isErrorSubtest && (
           <div className="p-4 bg-red-100 text-red-600 rounded-lg border border-red-200 text-center">
-            Gagal memuat data: {error}
+            Gagal memuat data: {isErrorSubtest}
           </div>
         )}
 
-        {!isLoading && !error && subtests.length === 0 && (
+        {!isSubtestLoading && !isErrorSubtest && subtests.length === 0 && (
           <div className="text-center py-10 text-gray-400">
             Tidak ada kuis yang tersedia saat ini.
           </div>
         )}
 
-        {showData&& (
+        {showData && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {subtests.map((subtest) => {
               const style = getCategoryStyle(subtest.name);
@@ -204,7 +114,6 @@ export default function HomeDashboard() {
                     </p>
                   </div>
 
-                  {/* Tombol Action */}
                   <button
                     onClick={() => handleStart(subtest.id)}
                     disabled={!subtest.is_active}

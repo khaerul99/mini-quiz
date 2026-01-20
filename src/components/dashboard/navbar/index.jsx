@@ -96,21 +96,15 @@ export default function Navbar({ onMenuClick }) {
       </div>
 
       <div
-          className={`fixed inset-0 z-99 flex items-center justify-center  transition-colors duration-300 
-            ${
-              modalOpen
-                ? "visible bg-black/20 backdrop-blur-sm"
-                : "invisible bg-black/0 pointer-events-none"
-            }`}
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 
+          ${modalOpen ? "visible opacity-100 backdrop-blur-sm" : "invisible opacity-0  pointer-events-none"}`}
       >
+        <div onClick={() => setModalOpen(false)} className="absolute inset-0 bg-gray-900/30  transition-all" />
+
+        
         <div
-          className={`bg-gray-100 p-6 rounded-2xl shadow-lg w-full max-w-md 
-      transition-all duration-300 ease-in-out
-      ${
-        modalOpen
-          ? "translate-y-0 opacity-100 scale-100"
-          : "-translate-y-10 opacity-0 scale-95"
-      }`}
+           className={`bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 p-8 overflow-hidden transform transition-all duration-300
+            ${modalOpen ? "translate-y-0 scale-100" : "translate-y-10 scale-95"}`}
         >
           <h2 className="text-xl font-bold mb-4">Logout</h2>
           <div className='flex flex-col items-center justify-center'>

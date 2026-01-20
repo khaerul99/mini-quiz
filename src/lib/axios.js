@@ -34,7 +34,7 @@ api.interceptors.response.use(
       const isLoginRequest = originalRequest.url.includes("/login") || originalRequest.url.includes("/auth");
 
       if (!isLoginRequest) {
-        console.warn("Sesi habis (401). Melakukan Auto Logout...");
+        console.warn("Sesi habis...");
         
         useAuthStore.getState().logout();
 
